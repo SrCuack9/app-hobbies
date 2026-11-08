@@ -1,6 +1,7 @@
 """Genera cola-ableton.js a partir del temario del curso (Word).
 
-Uso:  python tools/generar_cola_ableton.py "C:/Users/marco/Desktop/temario curso ableton.docx"
+Uso:  python tools/generar_cola_ableton.py "<ruta al temario .docx>"
+      (la ruta del temario está en CONTEXTO-app-hobbies.md, que no se sube al repo)
 
 El .docx no entra en el repo; solo los títulos y duraciones que hacen falta para la cola.
 Reglas de agrupación (criterio propio, ver docs/DISENO.md §3):
@@ -87,7 +88,9 @@ def a_tarea(grupo):
 
 
 def main():
-    ruta = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\marco\Desktop\temario curso ableton.docx'
+    if len(sys.argv) < 2:
+        sys.exit('Uso: python tools/generar_cola_ableton.py "<ruta al temario .docx>"')
+    ruta = sys.argv[1]
     videos = leer_videos(ruta)
     cola = [a_tarea(g) for g in agrupar(trozos(videos))]
     ids = [t['id'] for t in cola]
