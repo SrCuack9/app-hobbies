@@ -1,0 +1,9 @@
+# Repo PÚBLICO (GitHub Pages). Fuera todo lo personal, igual que en Invincible Gym:
+# contexto, bitácora y diseño viven solo en local (y en Drive, que espeja el escritorio).
+CLAUDE.md
+CONTEXTO-*.md
+BITACORA.md
+docs/
+# El temario del curso no entra; solo los títulos y duraciones de cola-ableton.js
+*.docx
+node_modules/
