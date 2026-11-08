@@ -252,7 +252,10 @@ test('importar: actualizar la cola de uno, añadir otro, sin tocar la lista orig
   assert.deepEqual(hobbies.find(h => h.id === 'lectura').dias, [6]);
   const dib = hobbies.find(h => h.id === 'dibujo');
   assert.equal(dib.ideal, 2, 'el ideal sube al mínimo si no se da');
+  assert.equal(dib.tipo, 'ruta', 'sin lista de tareas, es de tarea fija');
   assert.equal(cambios.length, 2);
+  const conCola = HL.aplicarImportacion(HOBBIES, { id: 'piano', nombre: 'Piano', cola: [{ id: 'p1', ref: 'Pieza 1' }] }).hobbies.find(h => h.id === 'piano');
+  assert.equal(conCola.tipo, 'cola', 'con lista de tareas, es de cola');
   // Un solo objeto también vale.
   assert.equal(HL.aplicarImportacion(HOBBIES, { id: 'lectura', nota: 'x' }).hobbies.find(h => h.id === 'lectura').nota, 'x');
 });

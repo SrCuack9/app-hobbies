@@ -264,7 +264,9 @@
         if ((final.ideal || 0) && final.ideal < final.minimo) throw new Error(`Hobby «${final.id}»: "ideal" no puede ser menor que "minimo".`);
         cambios.push(`«${final.nombre}» actualizado (${Object.keys(limpio).join(', ') || 'sin cambios'})`);
       } else {
-        const nuevo = { tipo: 'cola', minimo: 1, ideal: 1, dias: [], cola: [], orden: out.length + 1, ...limpio, id: entrada.id };
+        // Sin lista de tareas, el hobby es de tarea fija ('ruta'): muestra su "tarea" y, si lo tiene, el enlace.
+        const tipo = Array.isArray(limpio.cola) && limpio.cola.length ? 'cola' : 'ruta';
+        const nuevo = { tipo, minimo: 1, ideal: 1, dias: [], cola: [], orden: out.length + 1, ...limpio, id: entrada.id };
         if (nuevo.ideal < nuevo.minimo) nuevo.ideal = nuevo.minimo;
         out.push(nuevo);
         cambios.push(`«${nuevo.nombre}» añadido (en pausa)`);

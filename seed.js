@@ -16,7 +16,7 @@
         tipo: 'ruta', url: 'https://claude.ai/artifact/SuFuV4qy19BT3tfnjuNZqk', textoBoton: 'Abrir la ruta',
         tarea: 'Siguiente tarea de la ruta, o sigue con la que dejaste a medias.',
         fin: 'Una tarea. Si a los 30 min no has acabado, apunta dónde la dejas: cuenta igual.',
-        diaMalo: '10 min: avanza lo que puedas y apunta dónde lo dejas.',
+        diaMalo: '10 min, avanzando lo que puedas y apuntando dónde lo dejas.',
       },
       {
         id: 'ableton', nombre: 'Curso de Ableton', orden: 2,
@@ -24,7 +24,7 @@
         tipo: 'cola',
         tarea: 'Míralo con Ableton abierto y repite cada paso.',
         fin: 'Acaba cuando hayas repetido el último paso del vídeo.',
-        diaMalo: 'Solo el vídeo, sin practicar.',
+        diaMalo: 'solo el vídeo, sin practicar.',
         cola,
       },
       { id: 'lectura', nombre: 'Lectura', orden: 3, minimo: 1, ideal: 1, dias: [], tipo: 'cola', cola: [],

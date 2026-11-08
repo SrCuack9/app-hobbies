@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Hobbies</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0b0b0c;--bg2:#151517;--bg3:#1f1f22;--bg4:#2b2b30;
+  --gold:#e9a23b;--gold-dim:rgba(233,162,59,.14);--green:#3faa72;--green-dim:rgba(63,170,114,.15);--red:#d0564f;
+  --text:#e6e6e6;--text2:#a2a2a8;--text3:#6c6c72;
+  --r:14px;--r-sm:10px;
+}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.4}
+body{min-height:100vh;min-height:100dvh}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit}
+
+.header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:6px;min-height:52px;padding:0 8px 0 16px;padding-top:env(safe-area-inset-top);background:var(--bg2);border-bottom:1px solid var(--bg3)}
+.header h1{flex:1;font-size:16px;font-weight:800;letter-spacing:2px;color:var(--gold)}
+.hbtn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);color:var(--text2)}
+.hbtn:active{background:var(--bg3)}
+.hbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hbtn[hidden]{display:none}
+
+main{max-width:560px;margin:0 auto;padding:12px 16px calc(24px + env(safe-area-inset-bottom))}
+.screen{display:none}.screen.on{display:block}
+
+.card{background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.label{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.label.gold{color:var(--gold)}
+.l-dos{display:flex;justify-content:space-between;gap:8px}
+.l-cuenta{text-transform:none;letter-spacing:0;font-weight:600}
+.trigger{font-size:13px;color:var(--text2);margin-bottom:10px}
+.t-name{font-size:22px;font-weight:800;line-height:1.2}
+.t-task{font-size:17px;margin-top:4px}
+.t-sub{font-size:14px;color:var(--text2);margin-top:2px}
+.t-meta{font-size:13px;color:var(--text3);margin-top:4px}
+.t-fin{font-size:13px;color:var(--text2);margin-top:8px}
+.t-malo{font-size:13px;color:var(--text3);margin-top:8px;text-align:center}
+.t-next{display:block;width:100%;text-align:left;margin-top:10px;padding-top:10px;border-top:1px solid var(--bg3);font-size:14px;color:var(--text2)}
+.t-next b{color:var(--gold);font-weight:600}
+.big{font-size:20px;font-weight:800}
+.muted{color:var(--text2);font-size:14px;margin-top:4px}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;padding:10px 16px;border-radius:var(--r-sm);font-weight:700;font-size:15px;margin-top:10px;text-decoration:none}
+.btn.primary{background:var(--gold);color:#111;min-height:54px;font-size:17px;letter-spacing:1px}
+.btn.primary:active{filter:brightness(.9)}
+.btn.sec{background:var(--bg3);color:var(--text)}
+.btn.sec:active{background:var(--bg4)}
+.btn.ghost{background:none;color:var(--text2);font-weight:600;min-height:40px}
+.link{color:var(--text2);font-size:13px;text-decoration:underline;text-underline-offset:3px;padding:8px 0 0}
+
+.row{display:flex;align-items:center;gap:10px;width:100%;padding:9px 0;text-align:left}
+.row+.row{border-top:1px solid var(--bg3)}
+.r-name{flex:1;font-size:16px;font-weight:600}
+.r-sub{display:block;font-size:13px;color:var(--text3);font-weight:400}
+.dots{display:flex;gap:5px}
+.dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--text3)}
+.dot.need{border-color:var(--gold)}
+.dot.on{background:var(--green);border-color:var(--green)}
+.r-count{min-width:62px;text-align:right;font-size:14px;font-weight:700;color:var(--gold)}
+.r-count.ok{color:var(--green)}
+.comodin .r-count:not(.ok){color:var(--text3)}
+.comodin .dot.need{border-color:var(--text3)}
+
+.strip{display:flex;gap:6px;margin:6px 0 4px}
+.cell{width:30px;height:30px;border-radius:7px;border:2px solid transparent;position:relative;flex:none}
+.cell.cumplida{background:var(--green);border-color:var(--green)}
+.cell.parcial{border-color:var(--green);background:linear-gradient(135deg,var(--green) 50%,transparent 50%)}
+.cell.fallada{border-color:var(--text3)}
+.cell.comodin{background:var(--bg3);border-color:var(--bg4)}
+.cell.comodin::after{content:'';position:absolute;left:7px;right:7px;top:12px;height:2px;background:var(--text3)}
+.cell.encurso{border:2px dashed var(--gold)}
+.cell.futura{border:1px solid var(--bg4)}
+.cell.actual{box-shadow:0 0 0 2px var(--bg2),0 0 0 3px var(--gold)}
+.legend{font-size:12px;color:var(--text3)}
+/* Móviles bajos: el inicio tiene que caber sin scroll (poca pantalla, regla 5). */
+@media (max-height:800px){
+  main{padding-top:10px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+  .screen>.card:last-child{margin-bottom:0}
+  .card{padding:12px 14px;margin-bottom:8px}
+  .trigger{margin-bottom:6px}
+  .btn{margin-top:8px;min-height:44px}
+  .btn.primary{min-height:50px}
+  .t-fin,.t-malo{margin-top:6px}
+  .t-next{margin-top:8px;padding-top:8px}
+  .row{padding:7px 0}
+}
+
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet-bg[hidden]{display:none}
+.sheet{width:100%;max-width:560px;background:var(--bg2);border-top:1px solid var(--bg4);border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}
+.sheet h2{font-size:18px;margin-bottom:2px}
+.seg{display:flex;gap:6px;margin-top:8px}
+.seg button{flex:1;min-height:44px;border-radius:var(--r-sm);background:var(--bg3);font-size:14px;font-weight:600;color:var(--text2)}
+.seg button.on{background:var(--gold-dim);color:var(--gold);box-shadow:inset 0 0 0 1.5px var(--gold)}
+.toggle{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:46px;padding:0 4px;border-bottom:1px solid var(--bg3);font-size:15px}
+.toggle .sw{width:42px;height:24px;border-radius:12px;background:var(--bg4);position:relative;flex:none}
+.toggle .sw::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--text2);transition:left .15s}
+.toggle.on .sw{background:var(--gold)}
+.toggle.on .sw::after{left:21px;background:#111}
+select,textarea{width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--bg4);border-radius:var(--r-sm);padding:10px;font:inherit;font-size:15px}
+textarea{min-height:120px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+
+.hist{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bg3);font-size:14px}
+.hist .h-main{flex:1}
+.hist .h-tags{font-size:12px;color:var(--text3)}
+.hist button{width:36px;height:36px;color:var(--text3);border-radius:8px}
+.hist button:active{background:var(--bg3)}
+.pill{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;background:var(--bg3);color:var(--text2);margin-left:6px;vertical-align:middle}
+.pill.gold{background:var(--gold-dim);color:var(--gold)}
+.check{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0;border-top:1px solid var(--bg3);text-align:left}
+.check .box{width:24px;height:24px;border-radius:6px;border:2px solid var(--text3);flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;color:#111}
+.check.on .box{background:var(--gold);border-color:var(--gold)}
+details summary{cursor:pointer;color:var(--text2);font-size:14px;margin-top:8px}
+pre{white-space:pre-wrap;font-size:12px;color:var(--text2);background:var(--bg3);padding:10px;border-radius:8px;margin-top:6px}
+p+p{margin-top:6px}
+.p{font-size:14px;color:var(--text2)}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--bg4);color:var(--text);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="header">
+  <button class="hbtn" id="btnAtras" hidden aria-label="Atrás"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <h1 id="titulo">HOBBIES</h1>
+  <button class="hbtn" id="btnHobbies" aria-label="Hobbies"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+  <button class="hbtn" id="btnAjustes" aria-label="Ajustes"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+</header>
+
+<main>
+  <section class="screen on" id="sInicio"></section>
+  <section class="screen" id="sHobby"></section>
+  <section class="screen" id="sHobbies"></section>
+  <section class="screen" id="sAjustes"></section>
+</main>
+
+<div class="sheet-bg" id="sheetBg" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="fileCopia" accept="application/json,.json" hidden>
+
+<script src="cola-ableton.js"></script>
+<script src="seed.js"></script>
+<script src="logic.js"></script>
+<script>
+'use strict';
+const VERSION = 'v1';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const horaLocal = () => { const d = new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+
+// Para probar con otra fecha: ?hoy=YYYY-MM-DD. Sin parámetro, el día local del móvil.
+function hoy() {
+  const p = new URLSearchParams(location.search).get('hoy');
+  return p && HL.esClave(p) ? p : HL.claveLocal(new Date());
+}
+
+// ---------- IndexedDB ----------
+const DB = {
+  db: null,
+  open() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open('AppHobbies', 1);
+      r.onupgradeneeded = () => {
+        const db = r.result;
+        ['hobbies', 'registro', 'bloques'].forEach(s => { if (!db.objectStoreNames.contains(s)) db.createObjectStore(s, { keyPath: 'id' }); });
+        if (!db.objectStoreNames.contains('ajustes')) db.createObjectStore('ajustes', { keyPath: 'key' });
+      };
+      r.onsuccess = () => { this.db = r.result; res(); };
+      r.onerror = () => rej(r.error);
+    });
+  },
+  req(store, mode, fn) {
+    return new Promise((res, rej) => {
+      const t = this.db.transaction(store, mode);
+      const q = fn(t.objectStore(store));
+      t.oncomplete = () => res(q ? q.result : undefined);
+      t.onerror = () => rej(t.error);
+      t.onabort = () => rej(t.error);
+    });
+  },
+  getAll(s) { return this.req(s, 'readonly', st => st.getAll()); },
+  get(s, k) { return this.req(s, 'readonly', st => st.get(k)); },
+  put(s, v) { return this.req(s, 'readwrite', st => st.put(v)); },
+  del(s, k) { return this.req(s, 'readwrite', st => st.delete(k)); },
+  // Sustituye todo en una sola transacción: o entra la copia entera o no entra nada.
+  reemplazarTodo(datos) {
+    const stores = ['hobbies', 'registro', 'bloques', 'ajustes'];
+    return new Promise((res, rej) => {
+      const t = this.db.transaction(stores, 'readwrite');
+      stores.forEach(s => { const st = t.objectStore(s); st.clear(); datos[s].forEach(v => st.put(v)); });
+      t.oncomplete = () => res();
+      t.onerror = () => rej(t.error);
+      t.onabort = () => rej(t.error);
+    });
+  },
+};
+
+const S = { hobbies: [], registro: [], bloques: [], ajustes: {} };
+async function cargar() {
+  S.hobbies = await DB.getAll('hobbies');
+  S.registro = await DB.getAll('registro');
+  S.bloques = await DB.getAll('bloques');
+  S.ajustes = Object.fromEntries((await DB.getAll('ajustes')).map(a => [a.key, a.value]));
+}
+const byId = id => S.hobbies.find(h => h.id === id);
+const ctx = () => ({ hobbies: S.hobbies, bloques: S.bloques, registro: S.registro, hoy: hoy() });
+
+// ---------- Primera apertura y migraciones ----------
+async function sembrar() {
+  if (S.ajustes.seedVersion) return;
+  for (const h of SEED.hobbies) await DB.put('hobbies', h);
+  const inicio = HL.inicioPrimerBloque(hoy());
+  await DB.put('bloques', { id: 'b1-' + inicio, n: 1, inicio, semanas: 8, activos: SEED.activos.slice(), comodines: 2, semanasComodin: [], cerrado: false });
+  await DB.put('ajustes', { key: 'seedVersion', value: SEED.version });
+  await DB.put('ajustes', { key: 'schemaVersion', value: 1 });
+  await DB.put('ajustes', { key: 'creada', value: new Date().toISOString() });
+  await cargar();
+}
+async function migrar() {
+  // Cada cambio futuro de datos ya sembrados va aquí, por schemaVersion (como en Invincible Gym).
+  // const v = S.ajustes.schemaVersion || 1;
+  // if (v < 2) { …; await DB.put('ajustes', { key: 'schemaVersion', value: 2 }); }
+}
+
+// ---------- Navegación ----------
+let pantalla = 'inicio', param = null;
+const TITULOS = { inicio: 'HOBBIES', hobbies: 'HOBBIES', ajustes: 'AJUSTES' };
+function ir(p, prm = null, push = true) {
+  pantalla = p; param = prm;
+  if (push) history.pushState({ p, prm }, '');
+  render();
+  window.scrollTo(0, 0);
+}
+window.addEventListener('popstate', e => {
+  if (!$('sheetBg').hidden) { cerrarSheet(false); return; }
+  const st = e.state || { p: 'inicio', prm: null };
+  ir(st.p, st.prm, false);
+});
+$('btnAtras').onclick = () => history.back();
+$('btnHobbies').onclick = () => ir('hobbies');
+$('btnAjustes').onclick = () => ir('ajustes');
+
+function render() {
+  ['inicio', 'hobby', 'hobbies', 'ajustes'].forEach(p => $('s' + p[0].toUpperCase() + p.slice(1)).classList.toggle('on', p === pantalla));
+  $('btnAtras').hidden = pantalla === 'inicio';
+  $('btnHobbies').hidden = pantalla !== 'inicio';
+  $('btnAjustes').hidden = pantalla !== 'inicio';
+  $('titulo').textContent = pantalla === 'hobby' ? (byId(param)?.nombre || '').toUpperCase() : TITULOS[pantalla];
+  if (pantalla === 'inicio') renderInicio();
+  else if (pantalla === 'hobby') renderHobby(param);
+  else if (pantalla === 'hobbies') renderHobbies();
+  else if (pantalla === 'ajustes') renderAjustes();
+}
+
+// ---------- Inicio ----------
+function tareaHtml(h, { conBoton = true } = {}) {
+  let html = `<div class="t-name">${esc(h.nombre)}</div>`;
+  if (h.tipo === 'cola') {
+    const q = HL.siguienteDeCola(h, S.registro);
+    if (!q || q.fin) {
+      html += `<div class="t-task">Has terminado su lista.</div><div class="t-sub">Prepara la siguiente e impórtala en Ajustes; mientras, cuenta igual lo que hagas.</div>`;
+    } else {
+      html += `<div class="t-task">${esc(q.tarea.ref || q.tarea.texto || '')}${q.tarea.min ? ` · ${q.tarea.min} min` : ''}</div>`;
+      if (q.tarea.titulo) html += `<div class="t-sub">${esc(q.tarea.titulo)}</div>`;
+      if (h.tarea) html += `<div class="t-sub">${esc(h.tarea)}</div>`;
+      html += `<div class="t-meta">Sesión ${q.numero} de ${q.total}${q.aMedias ? ' · la dejaste a medias' : ''}</div>`;
+    }
+  } else if (h.tarea) {
+    html += `<div class="t-task">${esc(h.tarea)}</div>`;
+  }
+  if (h.fin) html += `<div class="t-fin">${esc(h.fin)}</div>`;
+  if (h.url) html += `<a class="btn sec" href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.textoBoton || 'Abrir')} ↗</a>`;
+  if (conBoton) html += `<button class="btn primary" data-hecho="${esc(h.id)}">HECHO</button>`;
+  if (h.diaMalo) html += `<div class="t-malo">Día malo: ${esc(h.diaMalo)}</div>`;
+  return html;
+}
+
+function tarjetaHtml(t, d) {
+  const fecha = HL.fechaLarga(d);
+  if (t.tipo === 'toca' || t.tipo === 'recupera') {
+    const h = byId(t.principal);
+    let html = `<div class="card"><div class="label gold">${t.principalRecupera ? 'Recupera esta semana' : 'Hoy'} · ${esc(fecha)}</div>`;
+    if (h.disparador) html += `<div class="trigger">${esc(h.disparador)}.</div>`;
+    html += tareaHtml(h);
+    if (t.secundario) {
+      const s = byId(t.secundario);
+      html += `<button class="t-next" data-hobby="${esc(s.id)}">Después, si puedes: <b>${esc(s.nombre)}</b>${t.secundarioRecupera ? ' (para llegar al mínimo)' : ''} ›</button>`;
+    }
+    return html + '</div>';
+  }
+  if (t.tipo === 'antes') {
+    const act = HL.activosDe(t.bloque, S.hobbies);
+    return `<div class="card"><div class="label gold">Bloque ${t.bloque.n}</div>
+      <div class="big">Empieza el ${esc(HL.fechaLarga(t.bloque.inicio))}</div>
+      ${act.map(h => `<div class="muted">${esc(h.nombre)}: ${esc(HL.textoDias(h.dias))}, mínimo ${h.minimo}${h.ideal > h.minimo ? ` (ideal ${h.ideal})` : ''}.</div>`).join('')}
+      <div class="t-meta" style="margin-top:8px">Si quieres adelantar algo, toca un hobby abajo: suma igual.</div></div>`;
+  }
+  if (t.tipo === 'comodin') {
+    return `<div class="card"><div class="label">Hoy · ${esc(fecha)}</div><div class="big">Semana con comodín</div>
+      <div class="muted">Esta semana no cuenta. Si haces algo, suma igual.</div></div>`;
+  }
+  if (t.tipo === 'nada') {
+    const tit = t.cumplida ? 'Semana cumplida ✓' : t.hechoHoy ? 'Hecho por hoy ✓' : 'Hoy no toca nada';
+    const sub = t.cumplida ? 'Lo que hagas de más cuenta.' : t.hechoHoy ? 'Lo siguiente, el próximo día que toque.' : 'Si te apetece adelantar, toca un hobby abajo.';
+    return `<div class="card"><div class="label">Hoy · ${esc(fecha)}</div><div class="big">${tit}</div><div class="muted">${sub}</div></div>`;
+  }
+  if (t.tipo === 'finBloque') return finBloqueHtml(t.bloque, d);
+  return `<div class="card"><div class="big">No hay ningún bloque en marcha</div>
+    <button class="btn primary" data-accion="seguir">Empezar un bloque esta semana</button>
+    <button class="btn sec" data-accion="cambiar">Elegir hobbies</button></div>`;
+}
+
+function semanaHtml(bloque, d) {
+  const filas = HL.semanaHobbies({ bloque, hobbies: S.hobbies, registro: S.registro, hoy: d });
+  if (!filas.length) return '';
+  const conComodin = (bloque.semanasComodin || []).includes(HL.lunesDe(d));
+  let html = `<div class="card${conComodin ? ' comodin' : ''}"><div class="label">Esta semana${conComodin ? ' · con comodín' : ''}</div>`;
+  filas.forEach(f => {
+    const total = Math.max(f.ideal, f.n);
+    let dots = '';
+    for (let i = 0; i < total; i++) dots += `<span class="dot ${i < f.n ? 'on' : i < f.minimo ? 'need' : ''}"></span>`;
+    const txt = f.estado === 'pendiente' ? `${f.n} de ${f.minimo}` : f.estado === 'minimo' ? `${f.n} ✓` : `${f.n} ✓`;
+    html += `<button class="row" data-hobby="${esc(f.id)}"><span class="r-name">${esc(f.nombre)}</span><span class="dots">${dots}</span><span class="r-count ${f.estado === 'pendiente' ? '' : 'ok'}">${txt}</span></button>`;
+  });
+  if (HL.puedeDevolverComodin(bloque, d)) html += `<button class="link" data-accion="devolverComodin">Devolver el comodín de esta semana</button>`;
+  else if (HL.puedeUsarComodin(bloque, d)) html += `<button class="link" data-accion="usarComodin">Usar un comodín esta semana (${HL.comodinesLibres(bloque) === 1 ? 'queda 1' : `quedan ${HL.comodinesLibres(bloque)}`})</button>`;
+  return html + '</div>';
+}
+
+function stripHtml(semanas) {
+  return `<div class="strip">${semanas.map(s => `<span class="cell ${s.estado}${s.actual ? ' actual' : ''}" title="Semana ${s.n}: ${esc(s.estado)}"></span>`).join('')}</div>`;
+}
+
+function bloqueHtml(bloque, d) {
+  if (!bloque) return '';
+  const semanas = HL.tira({ bloque, hobbies: S.hobbies, registro: S.registro, hoy: d });
+  const k = HL.semanaDelBloque(bloque, HL.lunesDe(d));
+  const fin = HL.sumarDias(HL.ultimoLunes(bloque), 6);
+  const total = S.registro.filter(r => r.fecha >= bloque.inicio && r.fecha <= fin && bloque.activos.includes(r.hobbyId)).length;
+  return `<div class="card"><div class="label l-dos"><span>Bloque ${bloque.n}${k ? ` · semana ${k} de ${bloque.semanas}` : ''}</span><span class="l-cuenta">${total} ${total === 1 ? 'sesión' : 'sesiones'}</span></div>
+    ${stripHtml(semanas)}
+    <div class="legend">■ cumplida · ◧ a medias · □ fallada · ─ comodín</div></div>`;
+}
+
+function finBloqueHtml(bloque, d) {
+  const r = HL.resumenBloque({ bloque, hobbies: S.hobbies, registro: S.registro, hoy: d });
+  let html = `<div class="card"><div class="label gold">Fin del bloque ${bloque.n}</div>
+    <div class="t-meta">${esc(HL.fechaCorta(bloque.inicio))} – ${esc(HL.fechaCorta(r.fin))}</div>${stripHtml(r.semanas)}`;
+  r.porHobby.forEach(h => {
+    const v = h.valoraciones;
+    html += `<div style="margin-top:10px"><b>${esc(h.nombre)}</b>
+      <div class="muted">${h.sesiones} ${h.sesiones === 1 ? 'sesión' : 'sesiones'} · mínimo cumplido ${h.semanasConMinimo} de ${h.semanasEvaluables} semanas</div>
+      <div class="t-meta">${v.gusto} me ha gustado · ${v.normal} normal · ${v.rastras} a rastras${h.cola && !h.cola.fin ? ` · va por la ${h.cola.numero} de ${h.cola.total}` : ''}</div></div>`;
+  });
+  html += `<div class="t-meta" style="margin-top:8px">Comodines usados: ${r.comodinesUsados} de ${bloque.comodines}.</div>
+    <button class="btn primary" data-accion="seguir">Seguir con los mismos</button>
+    <button class="btn sec" data-accion="cambiar">Cambiar hobbies</button>
+    <button class="btn sec" data-accion="descanso">Una semana de descanso</button>
+    <button class="btn ghost" data-accion="copiarResumen">Copiar resumen para revisarlo con Claude</button></div>`;
+  return html;
+}
+
+function renderInicio() {
+  const d = hoy();
+  const t = HL.tarjetaHoy(ctx());
+  const bloque = t.tipo === 'finBloque' ? null : HL.bloqueVigente(S.bloques, d);
+  let html = tarjetaHtml(t, d);
+  if (t.tipo === 'antes') {
+    html += `<div class="card"><div class="label">Hobbies del bloque</div>${HL.activosDe(t.bloque, S.hobbies)
+      .map(h => `<button class="row" data-hobby="${esc(h.id)}"><span class="r-name">${esc(h.nombre)}<span class="r-sub">${esc(HL.textoDias(h.dias))}</span></span><span class="r-count ok">›</span></button>`).join('')}</div>`;
+  } else if (bloque && t.tipo !== 'sinBloque') {
+    html += semanaHtml(bloque, d) + bloqueHtml(bloque, d);
+  }
+  $('sInicio').innerHTML = html;
+}
+
+// ---------- Detalle de un hobby ----------
+function renderHobby(id) {
+  const h = byId(id);
+  if (!h) { ir('inicio', null, false); return; }
+  const d = hoy();
+  const bloque = HL.bloqueVigente(S.bloques, d);
+  const activo = !!bloque && bloque.activos.includes(h.id);
+  let html = '<div class="card">';
+  html += `<div class="label${activo ? ' gold' : ''}">${activo ? 'Activo' : 'En pausa'}</div>`;
+  if (activo) {
+    html += `<div class="trigger">${esc(HL.textoDias(h.dias))} · mínimo ${h.minimo}${h.ideal > h.minimo ? `, ideal ${h.ideal}` : ''} por semana</div>`;
+    html += tareaHtml(h);
+  } else {
+    html += `<div class="t-name">${esc(h.nombre)}</div><div class="muted">${esc(h.nota || 'Se revisa al acabar el bloque.')}</div>`;
+    html += `<div class="t-meta" style="margin-top:8px">En pausa no cuenta para nada. Se activa al acabar el bloque, o desde la lista de hobbies.</div>`;
+  }
+  html += '</div>';
+  const suyas = S.registro.filter(r => r.hobbyId === h.id).sort((a, b) => (b.fecha + b.hora).localeCompare(a.fecha + a.hora));
+  if (suyas.length) {
+    const VAL = { gusto: 'me ha gustado', normal: 'normal', rastras: 'a rastras' };
+    html += `<div class="card"><div class="label">Sesiones (${suyas.length})</div>`;
+    suyas.slice(0, 40).forEach(r => {
+      const tarea = r.tareaId && h.cola ? h.cola.find(t => t.id === r.tareaId) : null;
+      const tags = [tarea ? tarea.ref : null, r.completa === false ? 'a medias' : null, r.corta ? 'versión corta' : null, VAL[r.valoracion] || null].filter(Boolean);
+      html += `<div class="hist"><div class="h-main">${esc(HL.fechaLarga(r.fecha))} · ${esc(r.hora || '')}<div class="h-tags">${esc(tags.join(' · '))}</div></div>
+        <button data-borrar="${esc(r.id)}" aria-label="Borrar sesión">✕</button></div>`;
+    });
+    html += '</div>';
+  }
+  $('sHobby').innerHTML = html;
+}
+
+// ---------- Lista de hobbies ----------
+let eligiendo = null; // Set de ids mientras se cambian los activos
+function renderHobbies() {
+  const d = hoy();
+  const bloque = HL.bloqueVigente(S.bloques, d);
+  const activos = bloque ? bloque.activos : [];
+  const todos = [...S.hobbies].sort((a, b) => (a.orden || 99) - (b.orden || 99));
+  let html = '';
+  if (eligiendo) {
+    const plan = planCambio();
+    const aviso = plan.modo === 'editar' && plan.bloque.inicio > plan.lunes ? `Serán los del bloque ${plan.bloque.n}, que empieza el ${HL.fechaLarga(plan.bloque.inicio)}.`
+      : plan.modo === 'editar' ? `Sustituyen a los del bloque ${plan.bloque.n}, que empieza esta semana.`
+      : plan.modo === 'cortar' ? 'Empiezan un bloque nuevo esta semana. El actual se cierra con lo que lleve.'
+      : 'Empiezan un bloque nuevo esta semana.';
+    html += `<div class="card"><div class="label gold">Elige uno o dos</div><p class="p">${esc(aviso)}</p>`;
+    todos.forEach(h => {
+      const on = eligiendo.has(h.id);
+      html += `<button class="check${on ? ' on' : ''}" data-elegir="${esc(h.id)}"><span class="box">${on ? '✓' : ''}</span><span class="r-name">${esc(h.nombre)}<span class="r-sub">${esc(h.tipo === 'cola' && !(h.cola || []).length ? 'sin tareas todavía: impórtalas en Ajustes' : HL.textoDias(h.dias))}</span></span></button>`;
+    });
+    html += `<button class="btn primary" data-accion="guardarActivos" ${eligiendo.size ? '' : 'disabled style="opacity:.4"'}>${plan.modo === 'editar' ? 'Guardar' : `Empezar con ${eligiendo.size === 1 ? 'este' : 'estos'}`}</button>
+      <button class="btn ghost" data-accion="cancelarElegir">Cancelar</button></div>`;
+    $('sHobbies').innerHTML = html;
+    return;
+  }
+  const fila = h => `<button class="row" data-hobby="${esc(h.id)}"><span class="r-name">${esc(h.nombre)}<span class="r-sub">${esc(activos.includes(h.id) ? `${HL.textoDias(h.dias)} · mínimo ${h.minimo}` : (h.nota || 'En pausa'))}</span></span><span class="r-count ok">›</span></button>`;
+  html += `<div class="card"><div class="label gold">Activos</div>${todos.filter(h => activos.includes(h.id)).map(fila).join('') || '<p class="p">Ninguno.</p>'}</div>`;
+  html += `<div class="card"><div class="label">En pausa</div><p class="p" style="margin-bottom:4px">No cuentan para nada. Se revisan al acabar el bloque.</p>${todos.filter(h => !activos.includes(h.id)).map(fila).join('')}</div>`;
+  html += `<button class="btn sec" data-accion="cambiar">Cambiar los hobbies activos</button>`;
+  $('sHobbies').innerHTML = html;
+}
+
+// ---------- Ajustes ----------
+const EJEMPLO_IMPORT = `{
+  "hobbies": [
+    {
+      "id": "lectura",
+      "minimo": 1, "ideal": 2, "dias": [6, 7],
+      "disparador": "Después de comer, en el sofá",
+      "fin": "Acaba al terminar el capítulo",
+      "diaMalo": "Leer 10 min",
+      "cola": [
+        { "id": "l-1", "ref": "Capítulo 1", "titulo": "Nombre del libro", "min": 25 }
+      ]
+    }
+  ]
+}`;
+function renderAjustes() {
+  const d = hoy();
+  const bloque = HL.bloqueVigente(S.bloques, d);
+  let html = `<div class="card"><div class="label">Copia de seguridad</div>
+    <p class="p">Tus datos viven solo en este móvil. Si borras los datos del navegador para este sitio, se borran también los de las otras apps del mismo dominio (el gym incluido).</p>
+    <button class="btn sec" data-accion="exportar">Descargar copia (.json)</button>
+    <button class="btn sec" data-accion="restaurar">Restaurar una copia</button></div>`;
+  html += `<div class="card"><div class="label">Revisar con Claude</div>
+    <p class="p">Primero escribe tú qué te ha funcionado y qué no, aunque sea en dos líneas. Luego pega este resumen.</p>
+    <button class="btn sec" data-accion="copiarResumen">Copiar resumen del bloque</button></div>`;
+  html += `<div class="card"><div class="label">Importar tareas o hobbies</div>
+    <p class="p">Pega aquí un bloque en JSON (por ejemplo, preparado con Claude). Actualiza los hobbies que ya existen por su "id" y añade los nuevos en pausa.</p>
+    <textarea id="txtImport" placeholder="{ &quot;hobbies&quot;: [ … ] }" spellcheck="false"></textarea>
+    <button class="btn sec" data-accion="importar">Importar</button>
+    <details><summary>Formato</summary><pre>${esc(EJEMPLO_IMPORT)}</pre>
+    <p class="p">Días: 1 = lunes … 7 = domingo. La cola sustituye entera a la anterior; las sesiones ya hechas se conservan por su "id".</p></details></div>`;
+  if (bloque) {
+    html += `<div class="card"><div class="label">Bloque ${bloque.n}</div>
+      <p class="p">Desde el ${esc(HL.fechaLarga(bloque.inicio))}, ${bloque.semanas} semanas. Comodines: ${(bloque.semanasComodin || []).length} de ${bloque.comodines} usados.</p></div>`;
+  }
+  html += `<div class="card"><div class="label">Esta app</div><p class="p">Versión ${VERSION} · almacenamiento persistente: <span id="persist">comprobando…</span></p></div>`;
+  $('sAjustes').innerHTML = html;
+  if (navigator.storage && navigator.storage.persisted) navigator.storage.persisted().then(p => { const el = $('persist'); if (el) el.textContent = p ? 'sí' : 'no (el navegador podría borrarlo si le falta espacio)'; });
+  else $('persist').textContent = 'no disponible';
+}
+
+// ---------- Hecho ----------
+let sesionAbierta = null;
+async function marcarHecho(id) {
+  const h = byId(id);
+  const q = HL.siguienteDeCola(h, S.registro);
+  const r = { id: uid(), fecha: hoy(), hora: horaLocal(), hobbyId: id, tareaId: q && !q.fin ? q.tarea.id : null, corta: false, completa: true, valoracion: null };
+  await DB.put('registro', r);
+  await cargar();
+  pedirPersistencia();
+  abrirSheet(r);
+  render();
+}
+function sheetHtml(r) {
+  const h = byId(r.hobbyId);
+  const dias = HL.diasMarcables(hoy());
+  let html = `<h2>✓ Hecho</h2><div class="muted">${esc(h.nombre)}</div>
+    <div class="label" style="margin-top:14px">¿Cómo ha ido? (opcional)</div>
+    <div class="seg">${[['gusto', 'Me ha gustado'], ['normal', 'Normal'], ['rastras', 'A rastras']].map(([k, t]) => `<button class="${r.valoracion === k ? 'on' : ''}" data-val="${k}">${t}</button>`).join('')}</div>
+    <div style="margin-top:10px">
+    <button class="toggle${r.corta ? ' on' : ''}" data-tog="corta"><span>Era la versión corta</span><span class="sw"></span></button>`;
+  if (r.tareaId) html += `<button class="toggle${r.completa === false ? ' on' : ''}" data-tog="medias"><span>La tarea se queda a medias</span><span class="sw"></span></button>`;
+  html += '</div>';
+  if (dias.length > 1) {
+    html += `<div class="label" style="margin-top:14px">Día</div><select id="selDia">${dias.slice().reverse().map(k => `<option value="${k}" ${k === r.fecha ? 'selected' : ''}>${k === hoy() ? 'Hoy' : esc(HL.fechaLarga(k))}</option>`).join('')}</select>`;
+  }
+  html += `<button class="btn primary" data-accion="cerrarSheet">Listo</button>
+    <button class="btn ghost" data-accion="deshacer">Deshacer</button>`;
+  return html;
+}
+function abrirSheet(r) {
+  sesionAbierta = r;
+  $('sheet').innerHTML = sheetHtml(r);
+  $('sheetBg').hidden = false;
+  history.pushState({ p: pantalla, prm: param, sheet: true }, '');
+}
+function cerrarSheet(conHistoria = true) {
+  if ($('sheetBg').hidden) return;
+  $('sheetBg').hidden = true;
+  sesionAbierta = null;
+  if (conHistoria && history.state && history.state.sheet) history.back();
+  render();
+}
+async function guardarSesion() {
+  await DB.put('registro', sesionAbierta);
+  await cargar();
+  $('sheet').innerHTML = sheetHtml(sesionAbierta);
+  render();
+}
+$('sheetBg').addEventListener('click', async e => {
+  if (e.target === $('sheetBg')) { cerrarSheet(); return; }
+  const r = sesionAbierta; if (!r) return;
+  const v = e.target.closest('[data-val]');
+  if (v) { r.valoracion = r.valoracion === v.dataset.val ? null : v.dataset.val; await guardarSesion(); return; }
+  const tg = e.target.closest('[data-tog]');
+  if (tg) {
+    if (tg.dataset.tog === 'corta') r.corta = !r.corta;
+    else r.completa = r.completa === false ? true : false;
+    await guardarSesion(); return;
+  }
+  const a = e.target.closest('[data-accion]');
+  if (a && a.dataset.accion === 'cerrarSheet') cerrarSheet();
+  if (a && a.dataset.accion === 'deshacer') { await DB.del('registro', r.id); await cargar(); cerrarSheet(); toast('Sesión borrada'); }
+});
+$('sheetBg').addEventListener('change', async e => {
+  if (e.target.id === 'selDia' && sesionAbierta) { sesionAbierta.fecha = e.target.value; await guardarSesion(); }
+});
+
+// ---------- Bloques y comodines ----------
+async function nuevoBloque(activos, inicio, decision) {
+  const ult = HL.ultimoBloque(S.bloques);
+  if (ult && !ult.cerrado) { ult.cerrado = true; ult.decision = decision; await DB.put('bloques', ult); }
+  const n = (ult ? ult.n : 0) + 1;
+  await DB.put('bloques', { id: `b${n}-${inicio}`, n, inicio, semanas: 8, activos, comodines: 2, semanasComodin: [], cerrado: false });
+  await cargar();
+}
+// Qué pasa al cambiar los activos hoy: 'editar' un bloque que empieza esta semana o aún no ha
+// empezado, 'cortar' el bloque en curso y abrir otro, o abrir uno 'nuevo' si no hay ninguno.
+function planCambio() {
+  const lunes = HL.lunesDe(hoy());
+  const actual = HL.bloqueDeSemana(S.bloques, lunes);
+  const ult = HL.ultimoBloque(S.bloques);
+  const futuro = !actual && ult && !ult.cerrado && ult.inicio > lunes ? ult : null;
+  if (futuro) return { modo: 'editar', bloque: futuro, lunes };
+  if (actual && actual.inicio === lunes) return { modo: 'editar', bloque: actual, lunes };
+  if (actual) return { modo: 'cortar', bloque: actual, lunes };
+  return { modo: 'nuevo', bloque: null, lunes };
+}
+async function cambiarActivos(ids) {
+  const { modo, bloque: actual, lunes } = planCambio();
+  if (modo === 'editar') {
+    actual.activos = ids;
+    await DB.put('bloques', actual);
+    await cargar();
+  } else if (modo === 'cortar') {
+    actual.semanas = HL.semanasEntre(actual.inicio, lunes); // se recorta hasta la semana pasada
+    actual.cerrado = true; actual.decision = 'cambio';
+    await DB.put('bloques', actual);
+    await cargar();
+    await nuevoBloque(ids, lunes, 'cambio');
+  } else {
+    await nuevoBloque(ids, lunes, 'cambiar');
+  }
+}
+async function accion(nombre) {
+  const d = hoy();
+  const bloque = HL.bloqueVigente(S.bloques, d);
+  switch (nombre) {
+    case 'seguir': {
+      const ult = HL.ultimoBloque(S.bloques);
+      await nuevoBloque(ult ? ult.activos.slice() : SEED.activos.slice(), HL.lunesDe(d), 'seguir');
+      toast('Bloque nuevo en marcha'); render(); break;
+    }
+    case 'descanso': {
+      const ult = HL.ultimoBloque(S.bloques);
+      await nuevoBloque(ult.activos.slice(), HL.sumarDias(HL.lunesDe(d), 7), 'descanso');
+      toast('Semana de descanso. El bloque nuevo empieza el lunes'); render(); break;
+    }
+    case 'cambiar': {
+      eligiendo = new Set((bloque && !bloque.cerrado ? bloque.activos : []).filter(id => byId(id)));
+      ir('hobbies'); break;
+    }
+    case 'cancelarElegir': eligiendo = null; render(); break;
+    case 'guardarActivos': {
+      if (!eligiendo || !eligiendo.size) return;
+      await cambiarActivos([...eligiendo]);
+      eligiendo = null; toast('Hobbies activos cambiados'); ir('inicio'); break;
+    }
+    case 'usarComodin': {
+      if (!HL.puedeUsarComodin(bloque, d)) return;
+      if (!confirm(`¿Usar un comodín esta semana?\n\nLa semana no contará para nada. ${HL.comodinesLibres(bloque) - 1 === 0 ? 'Era el último de este bloque.' : `Te quedará ${HL.comodinesLibres(bloque) - 1} en este bloque.`} Lo puedes devolver hasta el domingo.`)) return;
+      bloque.semanasComodin = [...(bloque.semanasComodin || []), HL.lunesDe(d)];
+      await DB.put('bloques', bloque); await cargar(); render(); break;
+    }
+    case 'devolverComodin': {
+      if (!HL.puedeDevolverComodin(bloque, d)) return;
+      bloque.semanasComodin = bloque.semanasComodin.filter(l => l !== HL.lunesDe(d));
+      await DB.put('bloques', bloque); await cargar(); render(); break;
+    }
+    case 'copiarResumen': {
+      const b = HL.tarjetaHoy(ctx()).tipo === 'finBloque' ? HL.ultimoBloque(S.bloques) : bloque;
+      if (!b) { toast('No hay bloque que resumir'); return; }
+      const txt = HL.textoResumen(HL.resumenBloque({ bloque: b, hobbies: S.hobbies, registro: S.registro, hoy: d }));
+      try { await navigator.clipboard.writeText(txt); toast('Resumen copiado'); }
+      catch { prompt('Copia el resumen:', txt); }
+      break;
+    }
+    case 'exportar': await exportar(); break;
+    case 'restaurar': $('fileCopia').value = ''; $('fileCopia').click(); break;
+    case 'importar': await importar(); break;
+  }
+}
+
+// ---------- Copias e importación ----------
+async function exportar() {
+  const datos = { app: 'AppHobbies', version: 1, exportado: new Date().toISOString(),
+    hobbies: S.hobbies, registro: S.registro, bloques: S.bloques, ajustes: await DB.getAll('ajustes') };
+  const blob = new Blob([JSON.stringify(datos, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `app-hobbies-${hoy()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  toast('Copia descargada');
+}
+$('fileCopia').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const c = JSON.parse(await f.text());
+    HL.validarCopia(c);
+    if (!confirm(`Esta copia tiene ${c.registro.length} sesiones y ${c.bloques.length} bloques.\n\nSustituye TODOS los datos actuales de la app. ¿Seguir?`)) return;
+    await DB.reemplazarTodo(c);
+    await cargar(); toast('Copia restaurada'); ir('inicio');
+  } catch (err) { alert('No se ha podido restaurar: ' + err.message); }
+});
+async function importar() {
+  const raw = ($('txtImport').value || '').trim();
+  if (!raw) { toast('Pega primero el JSON'); return; }
+  try {
+    const m = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+    let datos;
+    try { datos = JSON.parse(m ? m[1] : raw); }
+    catch { throw new Error('el texto no es JSON válido. Suele ser una coma, unas comillas o un corchete de más o de menos; pídele a Claude que lo revise.'); }
+    const { hobbies, cambios } = HL.aplicarImportacion(S.hobbies, datos);
+    if (!confirm('Se va a aplicar:\n\n• ' + cambios.join('\n• ') + '\n\n¿Seguir?')) return;
+    for (const h of hobbies) await DB.put('hobbies', h);
+    await cargar(); $('txtImport').value = ''; toast('Importado'); render();
+  } catch (err) { alert('No se ha podido importar: ' + err.message); }
+}
+
+// ---------- Clics ----------
+document.querySelector('main').addEventListener('click', async e => {
+  const hecho = e.target.closest('[data-hecho]');
+  if (hecho) { hecho.disabled = true; await marcarHecho(hecho.dataset.hecho); return; }
+  const hob = e.target.closest('[data-hobby]');
+  if (hob) { ir('hobby', hob.dataset.hobby); return; }
+  const borrar = e.target.closest('[data-borrar]');
+  if (borrar) {
+    if (!confirm('¿Borrar esta sesión?')) return;
+    await DB.del('registro', borrar.dataset.borrar); await cargar(); render(); toast('Sesión borrada'); return;
+  }
+  const el = e.target.closest('[data-elegir]');
+  if (el && eligiendo) {
+    const id = el.dataset.elegir;
+    if (eligiendo.has(id)) eligiendo.delete(id);
+    else if (eligiendo.size >= 2) { toast('Como mucho dos a la vez'); return; }
+    else eligiendo.add(id);
+    render(); return;
+  }
+  const a = e.target.closest('[data-accion]');
+  if (a) await accion(a.dataset.accion);
+});
+
+// ---------- Utilidades ----------
+let toastT = null;
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400);
+}
+function pedirPersistencia() {
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+}
+
+// Si la app se queda abierta de un día para otro, al volver se recalcula «hoy».
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !sesionAbierta) render(); });
+
+async function init() {
+  try {
+    await DB.open();
+    await cargar();
+    await sembrar();
+    await migrar();
+    history.replaceState({ p: 'inicio', prm: null }, '');
+    render();
+  } catch (err) {
+    document.querySelector('main').innerHTML = `<div class="card"><div class="big">No se ha podido abrir la app</div><div class="muted">${esc(err && err.message || err)}</div></div>`;
+  }
+  if ('serviceWorker' in navigator) {
+    const habia = !!navigator.serviceWorker.controller;
+    let recargado = false;
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (habia && !recargado && !sesionAbierta) { recargado = true; location.reload(); }
+    });
+  }
+}
+init();
+</script>
+</body>
+</html>
